@@ -2,19 +2,31 @@
 
 A complete guide to deploying your first smart contract on Celo's Alfajores testnet using Foundry.
 
-## 🚀 Quick Start
-
-Follow these steps to deploy a simple "Hello World" smart contract on Celo Alfajores testnet.
-
 ### Prerequisites
 
 * Linux/macOS terminal
 * Basic knowledge of Solidity and blockchain concepts
 * A web browser for accessing the faucet
 
+### Process Overview
+
+1. [Install Foundry](#install-foundry)
+2. [Install Celo CLI](#install-celo-cli)
+3. [Configure Celo CLI](#configure-celo-cli)
+4. [Wallet Setup](#wallet-setup)
+5. [Fund via Alfajores Faucet](#fund-via-alfajores-faucet)
+6. [Initialize Project](#initialize-project)
+7. [Create HelloWorld Contract](#create-helloworld-contract)
+8. [Build](#build)
+9. [Testing](#testing)
+10. [Deploy](#deploy)
+11. [Interact](#interact)
+
 ### Step-by-Step Instructions
 
 #### 1. Install Foundry
+
+Install and configure Foundry CLI tools for contract development.
 
 ```bash
 # Download foundry installer `foundryup`
@@ -27,11 +39,15 @@ foundryup -i nightly
 
 #### 2. Install Celo CLI
 
+Install Celo command-line interface for interacting with the network.
+
 ```bash
 npm install -g @celo/celocli
 ```
 
 #### 3. Configure Celo CLI
+
+Set your CLI node URL to Alfajores.
 
 ```bash
 celocli config:set --node=https://alfajores-forno.celo-testnet.org
@@ -40,20 +56,20 @@ celocli config:get
 
 #### 4. Wallet Setup
 
-Create a new Celo account:
+Create your wallet and set environment variables.
 
 ```bash
 celocli account:new
 ```
+
+Export your private key and address:
 
 ```bash
 export YOUR_PRIVATE_KEY=
 export YOUR_ADDRESS=
 ```
 
-Note the address and privateKey returned in JSON.
-
-Encrypt and store the private key in the Foundry keystore:
+Encrypt and import your private key into Foundry’s keystore:
 
 ```bash
 cast wallet import my-wallet-hello-celo --private-key $YOUR_PRIVATE_KEY
@@ -61,20 +77,29 @@ cast wallet import my-wallet-hello-celo --private-key $YOUR_PRIVATE_KEY
 
 Choose a secure password; Foundry will decrypt at runtime.
 
-Create a `.env` file for public configuration:
+Create your .env file for public config:
 
 ```
-CELO_ACCOUNT_ADDRESS=<$YOUR_ADDRESS>
+# .env
+CELO_ACCOUNT_ADDRESS=$YOUR_ADDRESS
 CELO_NODE_URL=https://alfajores-forno.celo-testnet.org
 ```
 
 #### 5. Fund via Alfajores Faucet
 
-1. Open [https://alfajores.celo.org/faucet](https://alfajores.celo.org/faucet) in your browser
-2. Paste your address from the previous step
-3. Request test tokens (CELO and cUSD)
+> Get test CELO and cUSD to deploy your contract.
 
-Verify balance:
+- Open the Celo faucet in your browser 
+
+```
+https://alfajores.celo.org/faucet
+```
+
+- Request test tokens from the faucet:
+
+Paste your address in the faucet UI and request CELO and cUSD
+
+- Check your account balance:
 
 ```bash
 celocli account:balance $CELO_ACCOUNT_ADDRESS --node $CELO_NODE_URL
@@ -82,7 +107,7 @@ celocli account:balance $CELO_ACCOUNT_ADDRESS --node $CELO_NODE_URL
 
 #### 6. Initialize Project
 
-Create a new Foundry project for your Hello World contract:
+Scaffold a new Foundry project for your contract.
 
 ```bash
 # Initialize a new Foundry project
@@ -93,7 +118,8 @@ rm -rf test script src
 
 #### 7. Create HelloWorld Contract
 
-write `./src/HelloWorld.sol` with the following content:
+Write the HelloWorld Solidity contract.
+Create a contract file in `./src/HelloWorld.sol`.
 
 ```solidity
 // SPDX-License-Identifier: UNLICENSED
@@ -114,13 +140,16 @@ contract HelloWorld {
 
 #### 8. Build
 
+Compile your contract code.
+
 ```bash
 forge build
 ```
 
 #### 9. Testing
 
-Create a test file in `test/`:
+Verify contract logic with Forge tests.
+Create a test file in `test/HelloWorld.t.sol`.
 
 ```solidity
 // SPDX-License-Identifier: UNLICENSED
@@ -149,13 +178,10 @@ Run all tests:
 forge test
 ```
 
-Filter by contract or test name:
+#### 10. Deploy
 
-````bash
-forge test --match-contract HelloWorldTest --match-test testGreet
-```#### 10. Deploy
-
-Create `./script/Deploy.s.sol`:
+Deploy the contract to Alfajores using a Foundry script.
+Create a file in `./script/Deploy.s.sol`:
 
 ```solidity
 // SPDX-License-Identifier: UNLICENSED
@@ -171,28 +197,38 @@ contract DeployScript is Script {
         vm.stopBroadcast();
     }
 }
-````
+```
 
-Run:
+Deploy to Alfajores:
 
 ```bash
 forge script ./script/Deploy.s.sol \
   --rpc-url $CELO_NODE_URL \
-  --broadcast --account wallet-hello-celo \
-  --json | jq -r '.[0].transactions[0].contractAddress'
+  --broadcast --account wallet-hello-celo 
 ```
 
-Note the deployed contract address and add to `.env`:
+Save the deployed address:
 
 ```bash
 echo "CELO_CONTRACT_ADDRESS=<deployed_address>" >> .env
 ```
 
+
 #### 11. Interact
 
-Interact
+Call contract functions to confirm behavior
 
-Interact with your deployed contract via CeloScan or `cast`:
+Load your environment variables:
+
+```bash
+source .env
+```
+
+Call `greet` via cast: 
+
+```bash
+cast call --rpc-url $CELO_NODE_URL $CELO_CONTRACT_ADDRESS   "greet(string)(string)" "Celo 😎"
+```
 
 ## 📚 Additional Resources
 
