@@ -102,8 +102,7 @@ Paste your address in the faucet UI and request CELO and cUSD
 - Check your account balance:
 
 ```bash
-celocli account:balance $CELO_ACCOUNT_ADDRESS --node $CELO_NODE_URL
-```
+celocli account:balance $CELO_ACCOUNT_ADDRESS 
 
 #### 6. Initialize Project
 
